@@ -1,0 +1,42 @@
+[include]
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/alias.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/alias-for-cvs.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/alias-for-feature-flow.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/alias-for-gitk.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/alias-for-rails.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/alias-for-svn.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/apply.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/branch.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/color.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/core.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/credentials.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/diff.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/github.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/merge.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/mergetool.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/push.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/rerere.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/user.txt
+        path = ~/.config/git/sixarm_git_gitconfig/gitconfig.d/specific-to-osx.txt
+
+[user]
+	name = Adam Fishman
+	email = afishman@cs.washington.edu
+
+
+[github]
+	user = fishyai
+	token = ?
+
+[format]
+	pretty = "%H %ci %ce %ae %d %s"
+
+[alias]
+	l = log --graph --oneline
+
+[core]
+	pager = most
+
+[credential]
+	helper = store
+	username = fishyai
