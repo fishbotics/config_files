@@ -115,13 +115,28 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-source /opt/ros/kinetic/setup.bash
-source /opt/ros/kinetic/setup.bash
-# source ~/ws_moveit/devel/setup.bash
 
 # aliases
-alias ta="tmux attach-session -t"
+alias ta="tmux attach-session -dt"
 alias tn="tmux new -s"
 alias ll="ls -lhaFtr"
 
-source ~/moveit_ws/devel/setup.bash
+# Include this line if trying to use ROS Kinetic
+# source /opt/ros/kinetic/setup.bash
+
+# fasd related stuff
+eval "$(fasd --init auto)"
+alias a='fasd -a'        # any
+alias s='fasd -si'       # show / search / select
+alias d='fasd -d'        # directory
+alias f='fasd -f'        # file
+alias sd='fasd -sid'     # interactive directory selection
+alias sf='fasd -sif'     # interactive file selection
+alias z='fasd_cd -d'     # cd, same functionality as j in autojump
+alias zz='fasd_cd -d -i' # cd with interactive selection
+v() {
+  vim `fasd -f $1`
+}
+
+export CC=/usr/bin/gcc
+export CXX=/usr/bin/g++

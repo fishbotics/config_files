@@ -4,35 +4,27 @@ call plug#begin('~/.nvim/plugged')
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-commentary'
 Plug 'altercation/vim-colors-solarized'
-Plug 'facebook/vim-flow'
 Plug 'skammer/vim-css-color'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'vim-airline/vim-airline'
-Plug 'taketwo/vim-ros'
+
 
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rking/ag.vim'
-
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-
-" (Optional) Multi-entry selection UI.
-Plug 'junegunn/fzf'
-
-if has('nvim')
-	Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-	Plug 'Shougo/deoplete.nvim'
-	Plug 'roxma/nvim-yarp'
-	Plug 'roxma/vim-hug-neovim-rpc'
-endif
-
-Plug 'zchee/deoplete-jedi'
-Plug 'neomake/neomake'
-Plug 'fatih/vim-go'
 Plug 'rust-lang/rust.vim'
+"
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'neomake/neomake'
+
+  " Remember to run pip install jedi for Python 2/3
+  Plug 'deoplete-plugins/deoplete-jedi'
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets'
 
 call plug#end()
 
@@ -43,16 +35,37 @@ let mapleader=';'
 let maplocalleader=';'
 
 " }}}
+set autochdir
 " Plugin settings {{{
 
 " Use deoplete.
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_smart_case = 1
+
 " deoplete tab-complete
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
+" Plugin key-mappings.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab like snippets behavior.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
+
 nnoremap <leader><leader> :NERDTreeToggle<esc>
-nnoremap <leader>gt :Gstatus<cr>
 
 let NERDTreeIgnore = ['\.pyc$']
 
@@ -247,8 +260,6 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 cmap w!! w !sudo tee % >/dev/null
 nnoremap _md :set ft=markdown<CR>
 
-" open shell
-nnoremap <leader>sh :VimShellPop<CR>
 " }}}
 " Tab completion for commands {{{
 set wildmode=list:longest,list:full
@@ -310,14 +321,6 @@ if executable('ag')
   let g:ctrlp_user_command = 'ag %s -f -l --nocolor --files-with-matches -g "" --ignore "\.git$\|\.hg$\|\.svn$"'
 endif
 
-let g:ctrlp_use_caching = 1
-let g:ctrlp_follow_symlinks = 1
-let g:ctrlp_by_filename = 0 " using -l above
-let g:ctrlp_working_path_mode = 0 " Don't mess with current working dir
-let g:ctrlp_switch_buffer = 0 " Don't jump to an already open buffer
-
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
 " }}}
 
 " for some reason vim searches for something
@@ -389,7 +392,7 @@ nnoremap <leader>a  :Ag<Space>
 
 " Python for neovim
 let g:python_host_prog = '/usr/bin/python'
-let g:python3_host_prog = '/usr/bin/python3'
+let g:python3_host_prog = '/usr/bin/python3.7'
 
 " Remapping navigation
 :tnoremap <C-h> <C-\><C-n><C-w>h
