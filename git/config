@@ -6,22 +6,45 @@
 
 [core]
 	pager = less
+  editor = nvim
 
 [filter "lfs"]
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
 	required = true
 	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
 
+# A lot of these aliases come from here: https://github.com/haacked/dotfiles/blob/main/git/gitconfig.aliases.symlink
 [alias]
-  ten = log --graph --topo-order --abbrev-commit --date=short --decorate --all --boundary --pretty=tformat:'%Cgreen%ad %Cred%h%Creset -%C(yellow)%d%Creset %s %Cblue[%cn]%Creset' -n 10
   l = log --graph --topo-order --abbrev-commit --date=short --decorate --all --boundary --pretty=tformat:'%Cgreen%ad %Cred%h%Creset -%C(yellow)%d%Creset %s %Cblue[%cn]%Creset'
+  ten = log --graph --topo-order --abbrev-commit --date=short --decorate --all --boundary --pretty=tformat:'%Cgreen%ad %Cred%h%Creset -%C(yellow)%d%Creset %s %Cblue[%cn]%Creset' -n 10
+  st = status
   co = checkout
   br = branch
   ec = config --global -e
   up = !git pull --rebase --prune $@ && git submodule update --init --recursive
   cob = checkout -b
-  st = status
+  # Add and then commit
+	cm = !git add -A && git commit -m
+  # Add and quickly commit a checkpoint
+	save = !git add -A && git commit -m 'SAVEPOINT'
+  # Quickly commit a work-in-progress
+	wip = commit -am "WIP"
+  # Undo last commit (assuming not pushed)
+	undo = reset HEAD~1 --mixed
+  # Shortcut for amend
+	amend = commit --amend
+  # Creates an unreachable commit (i.e. only reachable through the reflog) with current changes and then resets. This is an undoable alternative to reset --hard, which is not undoable.
+	wipe = !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard
+  # Grabs the name of the default branch, typically master (but apparently this will be changing soon)
+  default = !git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
+  # Cleans all branches merged into the specified branch (or the default branch, i.e. master)
+  bclean = "!f() { DEFAULT=$(git default); git branch --merged ${1-$DEFAULT} | grep -v " ${1-$DEFAULT}$" | xargs git branch -d; }; f"
+  # Moves to a branch, pulls, and then cleans up the branch
+  bdone = "!f() { DEFAULT=$(git default); git checkout ${1-$DEFAULT} && git up && git bclean ${1-$DEFAULT}; }; f"
+  # Migrates a set of changes from one branch to another
+    migrate = "!f(){ DEFAULT=$(git default); CURRENT=$(git symbolic-ref --short HEAD); git checkout -b $1 && git branch --force $CURRENT ${3-$CURRENT@{u}} && git rebase --onto ${2-$DEFAULT} $CURRENT; }; f"
+  # Change user email or name for some commits
   # Usage
   # [Change author name everywhere] git change-commits GIT_AUTHOR_NAME "old name" "new name"
   # [Change author email for the last ten commits] git change-commits GIT_AUTHOR_EMAIL "old@email.com" "new@email.com" HEAD~10..HEAD
