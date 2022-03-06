@@ -6,6 +6,7 @@ Plug 'tpope/vim-commentary'
 Plug 'altercation/vim-colors-solarized'
 Plug 'skammer/vim-css-color'
 Plug 'vim-airline/vim-airline'
+Plug 'easymotion/vim-easymotion'
 
 
 Plug 'christoomey/vim-tmux-navigator'
