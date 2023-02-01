@@ -151,7 +151,7 @@ function limpcopy () {
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-export PYTHONPATH=${PYTHONPATH}:/usr/local/cython:/home/fishy/Repositories/srl_carbgym/python:/home/fishy/Repositories/isaac_gym_exp
+export PYTHONPATH=${PYTHONPATH}:/usr/local/cython
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64/
 export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}
