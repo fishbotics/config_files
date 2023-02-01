@@ -113,9 +113,9 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias sl="du -sh * | sort -h"
-alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+alias pip3='/usr/bin/python3 -m pip'
 export EDITOR='nvim'
 # aliases
 alias ta="tmux attach-session -dt"
@@ -137,20 +137,47 @@ v() {
   vim `fasd -f $1`
 }
 
+# A command to copy pytorch checkpoint files over
+function limpcopy () {
+  files=$(find $2 -type f -name "*.ckpt" | grep $1)
+  copydir=$(grep -o "run[^/]*${1}[^/]*" <<< $files)
+  copydir=$3/$copydir
+  echo "Copying $files to $copydir"
+  if read -q "choice?Are you sure (y/Y)? "; then
+    mkdir -p $copydir
+    cp $files $copydir
+  fi
+}
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+export PYTHONPATH=${PYTHONPATH}:/usr/local/cython:/home/fishy/Repositories/srl_carbgym/python:/home/fishy/Repositories/isaac_gym_exp
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64/
+export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
+fi
+
+export PATH="$HOME/.poetry/bin:$PATH"
+export PATH="$HOME/Repositories/catkin-docker:$PATH"
+export PATH="$HOME/.local/share/ngc-cli:$PATH"
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('$HOME/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$('/home/fishy/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "$HOME/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "/home/fishy/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/fishy/miniconda3/etc/profile.d/conda.sh"
     else
-        export PATH="$HOME/anaconda3/bin:$PATH"
+        export PATH="/home/fishy/miniconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
-
 # <<< conda initialize <<<
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+

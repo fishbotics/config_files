@@ -2,7 +2,7 @@
 set nocompatible
 call plug#begin('~/.nvim/plugged')
 Plug 'scrooloose/nerdtree'
-Plug 'tpope/vim-commentary'
+
 Plug 'altercation/vim-colors-solarized'
 Plug 'skammer/vim-css-color'
 Plug 'vim-airline/vim-airline'
@@ -11,9 +11,13 @@ Plug 'easymotion/vim-easymotion'
 
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rking/ag.vim'
-Plug 'rust-lang/rust.vim'
-"
+Plug 'cespare/vim-toml'
+Plug 'psf/black', { 'branch': 'master' }
+
 if has('nvim')
+  Plug 'neovim/nvim-lspconfig'
+  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+  Plug 'kkoomen/vim-doge', { 'do': ':call doge#install()'}
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
   Plug 'neomake/neomake'
 
@@ -21,11 +25,11 @@ if has('nvim')
   Plug 'deoplete-plugins/deoplete-jedi'
 else
   Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
+Plug 'junegunn/heytmux', { 'do': 'gem install heytmux' }
 
 call plug#end()
 
@@ -39,12 +43,45 @@ let maplocalleader=';'
 set autochdir
 " Plugin settings {{{
 
+"Use Black on save
+autocmd BufWritePre *.py execute ':Black'
+
 " Use deoplete.
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#enable_smart_case = 1
 
 " deoplete tab-complete
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+
+"Neomake settings
+call neomake#configure#automake('w')
+let g:neomake_python_enable_makers = ['flake8', 'pylint']
+let g:neomake_python_pylint_maker = {
+  \ 'args': [
+  \ '-d', 'C0103, C0111',
+  \ '-f', 'text',
+  \ '--msg-template="{path}:{line}:{column}:{C}: [{symbol}] {msg}"',
+  \ '-r', 'n'
+  \ ],
+  \ 'errorformat':
+  \ '%A%f:%l:%c:%t: %m,' .
+  \ '%A%f:%l: %m,' .
+  \ '%A%f:(%l): %m,' .
+  \ '%-Z%p^%.%#,' .
+  \ '%-G%.%#',
+  \ }
+let g:neomake_python_flake8_maker = {
+    \ 'args': ['--ignore=E501',  '--format=default'],
+    \ 'errorformat':
+        \ '%E%f:%l: could not compile,%-Z%p^,' .
+        \ '%A%f:%l:%c: %t%n %m,' .
+        \ '%A%f:%l: %t%n %m,' .
+        \ '%-G%.%#',
+    \ }
+
+" DoGe Settings
+let g:doge_doc_standard_python = 'reST'
+
+
 
 " Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
@@ -117,7 +154,7 @@ set listchars=tab:\ \ ,trail:·
 function! s:setupWrapping()
   setlocal wrap
   setlocal wrapmargin=2
-  setlocal textwidth=80
+  setlocal textwidth=79
   if v:version > 703
     setlocal colorcolumn=+1
   endif
@@ -230,7 +267,8 @@ augroup ft_python
   au!
 
   au FileType python setlocal ts=4 sw=4 sts=4
-  au FileType python setlocal wrap wrapmargin=2 textwidth=80 colorcolumn=+1
+  " au FileType python setlocal wrap wrapmargin=2 textwidth=79 colorcolumn=+1
+  au FileType python setlocal colorcolumn=88
 
 augroup END
 " }}}
@@ -349,21 +387,6 @@ vnoremap <Right> <Nop>
 nnoremap <leader>n :bn<cr>
 nnoremap <leader>p :bp<cr>
 
-" Syntastic settings
-let g:syntastic_python_checkers=['flake8']
-"let g:syntastic_python_python_exec = '/usr/bin/python'
-let g:syntastic_r_lint_styles = 'list(spacing.indentation.notabs, spacing.indentation.evenindent)'
-
-let g:syntastic_cpp_compiler = 'g++'
-let g:syntastic_cpp_compiler_options = '--std=c++11 -Wall'
-let g:syntastic_cpp_checkers=['clang_check', 'clang_tidy', 'gcc']
-if &ft != 'php'
-  let g:syntastic_always_populate_loc_list = 1
-  let g:syntastic_auto_loc_list=1
-  let g:syntastic_quiet_messages = { "type": "style" }
-endif
-let g:syntastic_mode_map = { 'passive_filetypes': ["java", "cpp", "php"] }
-
 " Lines added by the Vim-R-plugin command :RpluginConfig (2014-Sep-26 11:39):
 filetype plugin on
 inoremap <_> <_>
@@ -392,8 +415,8 @@ nnoremap <leader>a  :Ag<Space>
 nnoremap <leader>a  :Ag<Space>
 
 " Python for neovim
-let g:python_host_prog = '/usr/bin/python'
-let g:python3_host_prog = '/usr/bin/python3.7'
+let g:python_host_prog = '/home/fishy/virtualenvs/neovim/bin/python'
+let g:python3_host_prog = '/home/fishy/virtualenvs/neovim/bin/python'
 
 " Remapping navigation
 :tnoremap <C-h> <C-\><C-n><C-w>h
@@ -407,17 +430,6 @@ let g:python3_host_prog = '/usr/bin/python3.7'
 :nnoremap <C-l> <C-w>l
 
 vnoremap // y/<C-R>"<CR>
-
-let g:neomake_python_flake8_maker = {
-    \ 'args': ['--ignore=W503', '--format=default'],
-    \ 'errorformat':
-        \ '%E%f:%l: could not compile,%-Z%p^,' .
-        \ '%A%f:%l:%c: %t%n %m,' .
-        \ '%A%f:%l: %t%n %m,' .
-        \ '%-G%.%#',
-    \ }
-let g:neomake_python_enabled_makers = ['flake8']
-autocmd! BufWritePost * Neomake
 
 " Rust language serve
 autocmd BufReadPost *.rs setlocal filetype=rust
@@ -436,3 +448,21 @@ let g:LanguageClient_autoStart = 1
 nnoremap <silent> K :call LanguageClient_textDocument_hover()
 nnoremap <silent> gd :call LanguageClient_textDocument_definition()
 nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()
+
+" Use fasd to jump to directories
+" Z - cd to recent / frequent directories
+command! -nargs=* Z :call Z(<f-args>)
+function! Z(...)
+  let cmd = 'fasd -d -e printf'
+  for arg in a:000
+    let cmd = cmd . ' ' . arg
+  endfor
+  let path = system(cmd)
+  if isdirectory(path)
+    echo path
+    exec 'cd' fnameescape(path)
+  endif
+endfunction
+
+" Load lua config file (necessary for treesitter)
+lua require('config')

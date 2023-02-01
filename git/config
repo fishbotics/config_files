@@ -7,6 +7,7 @@
 [core]
 	pager = less
   editor = nvim
+	excludesfile = /home/fishy/.config/git/.gitignore
 
 [filter "lfs"]
 	required = true
@@ -50,3 +51,22 @@
   # [Change author email for the last ten commits] git change-commits GIT_AUTHOR_EMAIL "old@email.com" "new@email.com" HEAD~10..HEAD
   # [Change committer email everywhere] git change-commits GIT_COMMITTER_EMAIL "old@example.com" "new@example.com"
   change-commits = "!f() { VAR1=$1; VAR='$'$1; OLD=$2; NEW=$3; echo \"Are you sure for replace $VAR  $OLD => $NEW ?(Y/N)\";read OK;if [ \"$OK\" = 'Y' ] ; then shift 3; git filter-branch  --env-filter \"if [ \\\"${VAR}\\\" = '$OLD' ]; then export $VAR1='$NEW';echo 'to $NEW'; fi\" $@; fi;};  f "
+  uw = "!git config user.email \"afishman@cs.washington.edu\""
+  nvidia = "!git config user.email \"afishman@nvidia.com\""
+  email = !git config user.email || ( [ -n "$EMAIL" ] && echo "$EMAIL" ) || echo "$(id -nu)@$(hostname -f)"
+  name = !git config user.name || getent passwd $(id -un) | cut -d : -f 5 | cut -d , -f 1
+[diff "jupyternotebook"]
+	command = git-nbdiffdriver diff
+[merge "jupyternotebook"]
+	driver = git-nbmergedriver merge %O %A %B %L %P
+	name = jupyter notebook merge driver
+[difftool "nbdime"]
+	cmd = git-nbdifftool diff \"$LOCAL\" \"$REMOTE\" \"$BASE\"
+[difftool]
+	prompt = false
+[mergetool "nbdime"]
+	cmd = git-nbmergetool merge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+[mergetool]
+	prompt = false
+[init]
+	defaultBranch = main
